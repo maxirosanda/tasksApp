@@ -1,8 +1,9 @@
 import { StyleSheet,Pressable,Text } from 'react-native'
 
-const ButtonPrimary = ({text}) => {
+const ButtonPrimary = ({text, onPress}) => {
+
   return (
-            <Pressable style={styles.button}>
+            <Pressable onPress={onPress} style={styles.button}>
                 <Text style={styles.textButton}>{text}</Text>
             </Pressable>
   )
