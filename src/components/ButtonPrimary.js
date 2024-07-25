@@ -1,9 +1,10 @@
 import { StyleSheet,Pressable,Text } from 'react-native'
 
-const ButtonPrimary = ({text, onPress}) => {
+const ButtonPrimary = ({text, onPress,children}) => {
 
   return (
             <Pressable onPress={onPress} style={styles.button}>
+                {children}
                 <Text style={styles.textButton}>{text}</Text>
             </Pressable>
   )
@@ -19,7 +20,9 @@ const styles = StyleSheet.create({
         margin:10,
         alignItems:"center",
         justifyContent:"center",
-        borderRadius:5
+        borderRadius:5,
+        flexDirection:"row",
+        gap:10
       },
       textButton:{
         color:"white",
