@@ -1,20 +1,24 @@
 import { StatusBar } from 'expo-status-bar'
-import {StyleSheet, View, TextInput, Text} from 'react-native'
+import {StyleSheet, View, TextInput, Text, ScrollView,FlatList} from 'react-native'
 import ButtonPrimary from './src/components/ButtonPrimary'
 import { useEffect, useState } from 'react'
+import uuid from 'react-native-uuid'
+import CardTask from './src/components/CardTask'
+
 
 const App = () => {
     
-    const [newTask,setNewTask] = useState("")
+    const [taskName,setTaskName] = useState("")
     const [tasks, setTasks] = useState([])
 
-    useEffect(()=>{
-      console.log(tasks)
-    },[tasks])
 
     const handleAddTask = () => {
+      const newTask = {
+        id:uuid.v4(),
+        name:taskName
+      }
       setTasks([...tasks,newTask])
-      setNewTask("")
+      setTaskName("")
       
     }
 
@@ -24,11 +28,17 @@ const App = () => {
               <TextInput 
                 style={styles.input} 
                 placeholder='Ingrese una tarea'
-                value={newTask}
-                onChangeText={setNewTask}
+                value={taskName}
+                onChangeText={setTaskName}
               />
               <ButtonPrimary onPress={handleAddTask} text="Agregar"/>
             </View>
+            <FlatList
+              data={tasks}
+              keyExtractor={item => item.id}
+              renderItem={({item})=> <CardTask task={item}/>}
+            />
+
           </View>
     )
 }
@@ -52,9 +62,5 @@ const styles = StyleSheet.create({
     flex:2,
     margin:10,
     borderRadius:5
-  },
-  containerTitle:{
-    width:"100%",
-    flexDirection:"row"
   }
 })
