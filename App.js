@@ -1,21 +1,32 @@
 import { StatusBar } from 'expo-status-bar'
-import {StyleSheet, View, TextInput, Text, ScrollView,FlatList} from 'react-native'
+import {StyleSheet, View, TextInput} from 'react-native'
 import ButtonPrimary from './src/components/ButtonPrimary'
-import { useEffect, useState } from 'react'
+import TasksListContainer from './src/components/TasksListContainer'
+import { useState } from 'react'
 import uuid from 'react-native-uuid'
-import CardTask from './src/components/CardTask'
 import ModalPrimary from './src/components/ModalPrimary'
-import AntDesign from '@expo/vector-icons/AntDesign'
+import ContainerInput from './src/components/ContainerInput'
+
 
 
 const App = () => {
     
     const [taskName,setTaskName] = useState("")
     const [tasks, setTasks] = useState([])
-    const [visibleModal,setVisibleModal] = useState(false)
+    const [visibleAddTaskModal,setVisibleAddTaskModal] = useState(false)
+    const [visibleDeleteTaskModal,setVisibleDeleteTaskModal] = useState(false)
+    const [idTaskDelete,setIdTaskDelete] = useState("")
 
-    const handleVisibleModal = () => {
-      setVisibleModal(!visibleModal)
+    const handleTasksName = (t) => {
+      setTaskName(t)
+    }
+
+    const handleVisibleAddTaskModal = () => {
+      setVisibleAddTaskModal(!visibleAddTaskModal)
+    }
+    const handleVisibleDeleteTaskModal = (id="") => {
+      setIdTaskDelete(id)
+      setVisibleDeleteTaskModal(!visibleDeleteTaskModal)
     }
     const handleAddTask = () => {
       const newTask = {
@@ -24,35 +35,40 @@ const App = () => {
       }
       setTasks([...tasks,newTask])
       setTaskName("")
-      handleVisibleModal()
+      handleVisibleAddTaskModal()
       
+    }
+
+    const handleDeleteTask = (id) => {
+      setTasks(tasks.filter(task => task.id !== id))
+      handleVisibleDeleteTaskModal()
     }
 
     return(
           <>
-              <View style={styles.container}>
-              <View style={styles.containerInput}>
-                <TextInput 
-                  style={styles.input} 
-                  placeholder='Ingrese una tarea'
-                  value={taskName}
-                  onChangeText={setTaskName}
+          <View style={styles.container}>
+                <ContainerInput 
+                  taskName={taskName} 
+                  handleVisibleModal={handleVisibleAddTaskModal}
+                  handleTasksName={handleTasksName}
                 />
-                <ButtonPrimary onPress={handleVisibleModal} text="Agregar">
-                  <AntDesign name="pluscircle" size={24} color="white" />
-                </ButtonPrimary>
-              </View>
-              <FlatList
-                data={tasks}
-                keyExtractor={item => item.id}
-                renderItem={({item})=> <CardTask task={item}/>}
-              />
+                <TasksListContainer 
+                  tasks={tasks}
+                  handleVisibleModal={handleVisibleDeleteTaskModal}
+                  />
+           
             </View>
             <ModalPrimary 
               text="Quiere agregar una tarea?"
-              visible={visibleModal}
-              handleVisibleModal={handleVisibleModal}
+              visible={visibleAddTaskModal}
+              handleVisibleModal={handleVisibleAddTaskModal}
               handleModal = {handleAddTask}
+            />
+               <ModalPrimary 
+              text="Quiere borrar la tarea?"
+              visible={visibleDeleteTaskModal}
+              handleVisibleModal={handleVisibleDeleteTaskModal}
+              handleModal = {()=>handleDeleteTask(idTaskDelete)}
             />
           </>
     )
@@ -64,18 +80,5 @@ const styles = StyleSheet.create({
   container:{
     marginTop:30,
     flex:1
-  },
-  containerInput:{
-    flexDirection:"row",
-    padding:10
-  },
-  input:{
-    borderColor:"black",
-    borderWidth:1,
-    padding:5,
-    paddingStart:20,
-    flex:2,
-    margin:10,
-    borderRadius:5
   }
 })
